@@ -33,10 +33,10 @@
  */
 #define VISION_EXPORT_FRAME_PROCESSOR(frame_processor)                              \
                                                                                     \
-+(void)load                                                                         \
++(void)initialize                                                                   \
 {                                                                                   \
   [FrameProcessorPluginRegistry addFrameProcessorPlugin:@"__" @ #frame_processor callback:^id(Frame* frame, NSArray<id>* args) { \
-    return frame_processor(frame, args);                                           \
+    return frame_processor(frame, args);                                            \
   }];                                                                               \
 }
 
@@ -53,11 +53,13 @@ objc_name : NSObject<FrameProcessorPluginBase>                                  
 @end                                                                                \
 @implementation objc_name (FrameProcessorPlugin)                                    \
                                                                                     \
-+(void)load                                                                          \
++(void)initialize                                                                   \
 {                                                                                   \
-  [FrameProcessorPluginRegistry addFrameProcessorPlugin:@"__" @ #name callback:^id(Frame* frame, NSArray<id>* args) {    \
-    return [objc_name callback:frame withArgs:args];                               \
-  }];                                                                               \
+  if (self == [objc_name class]) {                                                  \
+    [FrameProcessorPluginRegistry addFrameProcessorPlugin:@"__" @ #name callback:^id(Frame* frame, NSArray<id>* args) {    \
+      return [objc_name callback:frame withArgs:args];                              \
+    }];                                                                             \
+  }                                                                                 \
 }
 
 #endif /* FrameProcessorPlugin_h */
